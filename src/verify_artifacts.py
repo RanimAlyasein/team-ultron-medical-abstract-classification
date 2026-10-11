@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import math
+import re
 from pathlib import Path
 
 
@@ -21,12 +22,19 @@ REQUIRED_PATHS = [
     "data/processed/validation.csv",
     "data/processed/test.csv",
     "notebooks/04_baseline_benchmark.ipynb",
-    "results/benchmark_validation.csv",
-    "results/final_test_metrics.csv",
-    "results/hierarchical_validation.csv",
-    "results/calibration_summary.csv",
-    "results/efficiency.csv",
+    "results/validation_benchmark.csv",
+    "results/final_test_results.csv",
+    "results/hierarchical_results.csv",
+    "results/calibration_results.csv",
+    "results/efficiency_results.csv",
+    "figures/class_distribution.png",
+    "figures/validation_macro_f1.png",
+    "figures/per_class_f1.png",
+    "figures/hierarchical_comparison.png",
+    "reports/dataset_audit_report.txt",
+    "reports/original_train_test_overlap.csv",
     "presentation/Team_Ultron_Final_Presentation.pptx",
+    "presentation/Team_Ultron_Final_Presentation.pdf",
 ]
 
 
@@ -65,22 +73,52 @@ def verify_dataset() -> None:
     master_ids = {row["abstract_id"] for row in tables["medical_abstracts_clean.csv"]}
     assert union_ids == master_ids, "Final splits do not exactly cover the clean master"
 
+    class_counts: dict[str, int] = {}
+    for row in tables["medical_abstracts_clean.csv"]:
+        label = row["condition_label"]
+        class_counts[label] = class_counts.get(label, 0) + 1
+    assert class_counts == {
+        "1": 2195,
+        "2": 699,
+        "3": 1049,
+        "4": 1961,
+        "5": 2394,
+    }, f"Unexpected clean class distribution: {class_counts}"
+
 
 def verify_metrics() -> None:
-    benchmark = read_rows(ROOT / "results" / "benchmark_validation.csv")
+    benchmark = read_rows(ROOT / "results" / "validation_benchmark.csv")
     biomed = next(row for row in benchmark if row["model"] == "BiomedBERT")
     require_close(biomed["val_macro_f1"], 0.8672, "validation Macro F1")
     require_close(biomed["test_macro_f1"], 0.8603, "test Macro F1")
 
-    hierarchical = read_rows(ROOT / "results" / "hierarchical_validation.csv")
+    hierarchical = read_rows(ROOT / "results" / "hierarchical_results.csv")
     combined = next(row for row in hierarchical if "combined" in row["system"])
     require_close(combined["macro_f1"], 0.8599, "hierarchical Macro F1")
+    stage1 = next(row for row in hierarchical if "Stage 1" in row["system"])
+    require_close(stage1["macro_f1"], 0.8572, "Stage 1 Macro F1")
 
-    calibration = read_rows(ROOT / "results" / "calibration_summary.csv")[0]
+    calibration = read_rows(ROOT / "results" / "calibration_results.csv")[0]
     require_close(calibration["ece"], 0.1041, "ECE")
+    assert calibration["accepted_samples"] == "1153", "Wrong accepted sample count"
 
-    efficiency = read_rows(ROOT / "results" / "efficiency.csv")[0]
+    efficiency = read_rows(ROOT / "results" / "efficiency_results.csv")[0]
     require_close(efficiency["abstracts_per_second"], 35.62, "throughput")
+
+
+def verify_markdown_links() -> None:
+    pattern = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+    broken: list[str] = []
+    for markdown in ROOT.rglob("*.md"):
+        text = markdown.read_text(encoding="utf-8")
+        for match in pattern.finditer(text):
+            target = match.group(1).strip().split(" ", 1)[0]
+            if target.startswith(("http://", "https://", "mailto:", "#")):
+                continue
+            relative = target.split("#", 1)[0]
+            if relative and not (markdown.parent / relative).exists():
+                broken.append(f"{markdown.relative_to(ROOT)} -> {target}")
+    assert not broken, "Broken Markdown links: " + "; ".join(broken)
 
 
 def main() -> None:
@@ -88,6 +126,7 @@ def main() -> None:
     assert not missing, f"Missing required files: {missing}"
     verify_dataset()
     verify_metrics()
+    verify_markdown_links()
     print("Repository verification passed.")
 
 

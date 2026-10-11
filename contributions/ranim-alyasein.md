@@ -1,6 +1,15 @@
-# Ranim Alyasein
+# Ranim Alyasein — Contribution
 
-- Prepared model input features.
-- Trained, tuned, and compared models.
-- Built the benchmark table.
-- Prepared the presentation slides and project narrative.
+## Main Responsibilities
+
+- Model training
+- Model comparison
+- BiomedBERT fine-tuning
+- Benchmark construction
+- Experiment analysis
+- Error analysis
+- Final model evaluation
+
+## Contribution Summary
+
+Ranim trained and compared the models, including fine-tuning BiomedBERT, and constructed the benchmark. She analyzed the experiments and errors and completed the final model evaluation.

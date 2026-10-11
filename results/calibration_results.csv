@@ -1,0 +1,2 @@
+model,split,accuracy,mean_confidence,ece,confidence_threshold,coverage,accepted_samples,total_samples,accepted_accuracy
+BiomedBERT,validation,0.8683,0.9706,0.1041,0.90,0.9261,1153,1245,0.8968

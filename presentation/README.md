@@ -1,6 +1,6 @@
 # Presentation
 
-`Team_Ultron_Final_Presentation.pptx` contains the ten final slides as full-slide images, matching the separate PNG files in `slides/`.
+`Team_Ultron_Final_Presentation.pptx` is the editable source deck. `Team_Ultron_Final_Presentation.pdf` is the submission-ready export of the same ten slides.
 
 The deck uses the canonical final values:
 

@@ -1,11 +1,11 @@
-# Team contributions
+# Team Contributions
 
-The individual files in this directory summarize the roles recorded in the final project README.
+This directory records the final agreed responsibility split for the project.
 
-| Member | Main areas |
+| Team member | Main responsibilities |
 | --- | --- |
-| Azaa Almousli | Dataset analysis, preprocessing, TextCNN, DeBERTa-v3 |
-| Saleh Almasaadi | Dataset cleaning and deterministic splits |
-| Tasnim Alibraheem | Model research, metric selection, BiomedBERT |
-| Ranim Alyasein | Features, model comparison, benchmark, presentation |
-| Muhammet Çelik | DistilBERT, classical tuning, evaluation, error analysis, calibration, documentation |
+| [Saleh Almasaadi](saleh-almasaadi.md) | Dataset cleaning; final train / validation / test splits; support for the final presentation |
+| [Tasnim Alibraheem](tasnim-alibraheem.md) | Model research; evaluation-metric selection |
+| [Ranim Alyasein](ranim-alyasein.md) | Model training and comparison; BiomedBERT fine-tuning; benchmark construction; experiment and error analysis; final model evaluation |
+| [Azaa Almousli](azza-almousli.md) | Dataset analysis; preprocessing; class-distribution analysis; project documentation |
+| [Muhammet Çelik](muhammet-celik.md) | Repository and file-structure organization; README and documentation setup; final testing and result verification; confusion-matrix and report preparation; final submission packaging |

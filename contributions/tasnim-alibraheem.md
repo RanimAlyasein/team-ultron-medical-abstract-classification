@@ -1,5 +1,10 @@
-# Tasnim Alibraheem
+# Tasnim Alibraheem — Contribution
 
-- Researched suitable NLP model families.
-- Recommended the model comparison plan and evaluation metrics.
-- Fine-tuned BiomedBERT.
+## Main Responsibilities
+
+- Model research
+- Selecting the evaluation metrics
+
+## Contribution Summary
+
+Tasnim researched suitable models for the classification task. She also selected the evaluation metrics used to assess and compare model performance.

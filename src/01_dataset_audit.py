@@ -271,13 +271,13 @@ def main() -> None:
             "================",
             "",
             "- reports/conflicting_abstracts.csv",
-            "- reports/train_test_overlap.csv",
+            "- reports/original_train_test_overlap.csv",
             "",
         ]
     )
 
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    report_path = REPORTS_DIR / "dataset_audit.txt"
+    report_path = REPORTS_DIR / "dataset_audit_report.txt"
     report_path.write_text("\n".join(report), encoding="utf-8")
     write_conflicts_csv(
         REPORTS_DIR / "conflicting_abstracts.csv",
@@ -287,7 +287,7 @@ def main() -> None:
         test_text_counts,
     )
     write_overlap_csv(
-        REPORTS_DIR / "train_test_overlap.csv",
+        REPORTS_DIR / "original_train_test_overlap.csv",
         overlapping_abstracts,
         train_labels_by_abstract,
         test_labels_by_abstract,

@@ -1,106 +1,144 @@
-# Benchmark and Evaluation Protocol
+# Benchmark and Experiment Details
 
-## Selection rule
+This document records the technical benchmark details that support the summary in the main [README](README.md). Model selection and tuning used the validation split only; the test split remained locked until the final BiomedBERT evaluation.
 
-Macro F1 was chosen before model comparison. It gives equal weight to all five classes and exposes failures on the smaller digestive and nervous-system categories that accuracy can hide.
+## Evaluation Contract
 
-All feature selection, hyperparameter tuning, epoch selection, and architecture comparisons used the validation split. The test split remained locked until final evaluation.
-
-## Data contract
-
-- Clean master: 8,298 unique, single-label abstracts
-- Train: 5,808 abstracts
-- Validation: 1,245 abstracts
-- Test: 1,245 abstracts
-- Split seed: 42
-- Exact-text overlap between final splits: 0
 - Primary metric: Macro F1
+- Supporting metrics: accuracy, macro precision, macro recall, weighted F1, per-class F1, and confusion matrices
+- Final split: 5,808 training, 1,245 validation, and 1,245 test abstracts
+- Split method: stratified with random seed 42
+- Leakage control: zero abstract-ID and exact-text overlap between final splits
 
-## Validation ranking
+Macro F1 was selected because the cleaned dataset is imbalanced. The default Multinomial Naive Bayes model illustrates the issue: its validation accuracy was 0.6755, while its Macro F1 was only 0.4849.
 
-| Rank | Model | Track | Accuracy | Macro F1 |
-| ---: | --- | --- | ---: | ---: |
-| 1 | **BiomedBERT** | New method | 0.8683 | **0.8672** |
-| 2 | BioBERT | New method | 0.8490 | 0.8456 |
-| 3 | DeBERTa-v3 | New method | 0.8313 | 0.8322 |
-| 4 | Logistic Regression | Baseline | 0.8217 | 0.8203 |
-| 5 | Linear SVM | Baseline | 0.8241 | 0.8180 |
-| 6 | BERT-base | Baseline | Not reported | 0.8124 |
-| 7 | DistilBERT | Baseline | 0.8048 | 0.8027 |
-| 8 | Naive Bayes, tuned | Baseline | 0.7920 | 0.7889 |
-| 9 | TextCNN | Baseline | Not reported | 0.7882 |
-| 10 | BiLSTM | Baseline | 0.7333 | 0.7127 |
-| 11 | Naive Bayes, default | Baseline | 0.6755 | 0.4849 |
+## Architecture and Checkpoint Terminology
 
-The baseline group follows the course coverage: Naive Bayes, Logistic Regression, Linear SVM, TextCNN, BiLSTM, BERT-base, and DistilBERT. The new-method group contains DeBERTa-v3, BioBERT, and BiomedBERT.
+An architecture defines a model's computational design. A checkpoint is a set of learned weights used with that architecture. BERT-base and DeBERTa-v3 represent different transformer architectures, while BioBERT and BiomedBERT are biomedical-pretrained checkpoints built from BERT-family architectures. The benchmark therefore treats biomedical pretraining as a meaningful experimental factor rather than describing every checkpoint as a new architecture.
 
-## Locked test result
+## Validation Benchmark
 
-BiomedBERT was selected exclusively by validation Macro F1. The saved checkpoint was then evaluated once on the locked test set.
+| Model | Family | Accuracy | Macro F1 |
+|---|---|---:|---:|
+| BiomedBERT | Biomedical transformer | 0.8683 | 0.8672 |
+| BioBERT | Biomedical transformer | 0.8490 | 0.8456 |
+| DeBERTa-v3 | Newer transformer | 0.8313 | 0.8322 |
+| Linear SVM | Classical | 0.8241 | 0.8180 |
+| Logistic Regression | Classical | 0.8217 | 0.8203 |
+| BERT-base | General transformer | — | 0.8124 |
+| DistilBERT | General transformer | — | 0.8027 |
+| Tuned Naive Bayes | Classical | — | 0.7889 |
+| TextCNN | Neural | — | 0.7882 |
+| BiLSTM | Neural | 0.7333 | 0.7127 |
+| Default Naive Bayes | Classical | 0.6755 | 0.4849 |
 
-| Metric | Value |
-| --- | ---: |
+The machine-readable table is available in [`results/validation_benchmark.csv`](results/validation_benchmark.csv). Default and tuned Naive Bayes are reported separately because tuning materially changed the result.
+
+## Classical Feature and Tuning Experiments
+
+The classical benchmark examined:
+
+- word-level unigram TF-IDF;
+- word-level unigram and bigram TF-IDF;
+- combined word and character TF-IDF, with character n-grams spanning lengths 3–5;
+- validation-only tuning for Multinomial Naive Bayes, Logistic Regression, and Linear SVM.
+
+The classical models provide transparent and computationally efficient reference points. Logistic Regression and Linear SVM remained strong baselines, but BiomedBERT produced the best validation Macro F1.
+
+## Neural Experiments
+
+TextCNN experiments compared convolution filter configurations, including `(3, 4, 5)` and `(2, 3, 4, 5)`, and used class-weighted loss. The final recorded TextCNN Macro F1 was 0.7882.
+
+The BiLSTM implementation was corrected to use packed sequences so padded tokens did not influence recurrent processing. It also used class-weighted loss. Its final validation accuracy was 0.7333 and Macro F1 was 0.7127.
+
+## Transformer Configuration
+
+Transformer inputs used `max_length = 512`. The retained length analysis showed that approximately 1.36% of BiomedBERT-tokenized abstracts exceeded that limit, so truncation affected a small but nonzero portion of the dataset.
+
+The transformer experiments used three training epochs, AdamW with a learning rate of `2e-5`, weight decay of `0.01`, and a 10% warmup proportion. Batch sizes were adapted to available GPU memory. DeBERTa-v3 exceeded the initial memory configuration on the Colab T4 GPU and was run with batch size 2 and gradient accumulation over 4 steps.
+
+Biomedical pretraining was evaluated directly by comparing BioBERT and BiomedBERT against general transformer baselines. BiomedBERT achieved the strongest validation result.
+
+## Learning-Curve Evidence
+
+The project notes identify a learning-curve experiment, but no verified learning-curve output or source values are present in the submitted repository. A `learning_curve_results.csv` file is therefore not fabricated. Reproducing that experiment would require the original run record or a new, explicitly documented execution.
+
+## Per-Class Validation Results
+
+The retained BiomedBERT validation report contains the following F1 scores:
+
+| Class | Validation F1 |
+|---|---:|
+| Neoplasms | 0.9235 |
+| Digestive system diseases | 0.8826 |
+| Nervous system diseases | 0.8150 |
+| Cardiovascular diseases | 0.9228 |
+| General pathological conditions | 0.7859 |
+
+The broad General class was the most difficult category. Its boundary overlaps semantically with more specific disease classes, which was a recurring source of error.
+
+## Hierarchical Experiment
+
+| System | Scope | Macro F1 | General-class F1 |
+|---|---|---:|---:|
+| Stage 1 | Specific vs General | 0.8572 | — |
+| Stage 2 | Four specific classes | 0.9478 | — |
+| Combined hierarchy | Routed five-class prediction | 0.8599 | 0.7978 |
+| Flat BiomedBERT | Direct five-class prediction | 0.8672 | 0.7859 |
+
+The hierarchy slightly improved the General-class F1, but routing errors reduced the overall Macro F1. The flat BiomedBERT model was therefore retained. The corresponding data are in [`results/hierarchical_results.csv`](results/hierarchical_results.csv).
+
+## Calibration and Confidence
+
+| Measure | Value |
+|---|---:|
+| Validation accuracy | 0.8683 |
+| Mean confidence | 0.9706 |
+| Expected calibration error | 0.1041 |
+| Confidence threshold | 0.90 |
+| Coverage at threshold | 92.61% |
+| Accepted samples | 1,153 / 1,245 |
+| Accuracy on accepted predictions | 89.68% |
+
+The mean confidence exceeds observed accuracy, so the model is overconfident. Its confidence scores should not be interpreted as perfectly calibrated probabilities. Only aggregate calibration values were retained; prediction-level confidence bins were not, so a reliability diagram cannot be reconstructed without rerunning inference. See [`results/calibration_results.csv`](results/calibration_results.csv) and [`src/calibration_analysis.py`](src/calibration_analysis.py).
+
+## Efficiency
+
+| Measure | Value |
+|---|---:|
+| Parameters | 109,486,085 |
+| Validation samples | 1,245 |
+| Total inference time | 34.95 seconds |
+| Time per abstract | 28.07 ms |
+| Throughput | 35.62 abstracts/second |
+| Hardware | Google Colab T4 GPU |
+
+These measurements demonstrate practical inference speed on a T4 GPU. They do not establish performance on other hardware or under production load. The machine-readable result is in [`results/efficiency_results.csv`](results/efficiency_results.csv).
+
+## Locked Test Evaluation
+
+The test split was not used for tuning or model selection. After BiomedBERT was selected using validation Macro F1, it was evaluated once on the locked test set.
+
+| Metric | Test value |
+|---|---:|
 | Accuracy | 0.8635 |
-| Macro precision | 0.8563 |
-| Macro recall | 0.8651 |
-| Macro F1 | **0.8603** |
+| Macro Precision | 0.8563 |
+| Macro Recall | 0.8651 |
+| Macro F1 | 0.8603 |
 | Weighted F1 | 0.8623 |
 
-### Per-class test F1
-
-| Class | F1 |
-| --- | ---: |
+| Class | Test F1 |
+|---|---:|
 | Neoplasms | 0.9367 |
 | Digestive system diseases | 0.8774 |
 | Nervous system diseases | 0.7975 |
 | Cardiovascular diseases | 0.9151 |
 | General pathological conditions | 0.7746 |
 
-## Hierarchical experiment
+Macro F1 changed from 0.8672 on validation to 0.8603 on test, a difference of 0.0069. This is a small validation-to-test gap indicating stable generalization. Aggregate and per-class values are retained in [`results/final_test_results.csv`](results/final_test_results.csv).
 
-Error analysis showed that most remaining mistakes involved the broad general-pathology class. A two-stage BiomedBERT system therefore routed each abstract through:
+The repository does not contain the prediction-level locked-test output or the final trained checkpoint. Consequently, a final test confusion matrix cannot be reconstructed without a new evaluation run and is not presented as an existing artifact.
 
-1. Specific disease versus general pathological condition
-2. One of the four specific disease categories
+## Reproducibility Notes
 
-Stage 2 reached Macro F1 0.9478 on its four-class subset, but routing errors reduced the combined five-class validation Macro F1 to **0.8599**. The flat BiomedBERT score of **0.8672** remained better and was retained.
-
-## Calibration
-
-The final BiomedBERT model was overconfident on validation.
-
-| Metric | Value |
-| --- | ---: |
-| Validation accuracy | 0.8683 |
-| Mean confidence | 0.9706 |
-| Expected Calibration Error | **0.1041** |
-| Coverage at confidence ≥ 0.90 | 0.9261 |
-| Accuracy among accepted predictions | 0.8968 |
-
-Confidence is useful for ranking cases for human review, but should not be treated as a calibrated probability without additional calibration.
-
-## Efficiency
-
-| Measure | Value |
-| --- | ---: |
-| Parameters | 109,486,085 |
-| Validation examples | 1,245 |
-| Inference time | 34.95 s |
-| Time per abstract | 28.07 ms |
-| Throughput | **35.62 abstracts/s** |
-| Hardware | Google Colab T4 GPU |
-
-## Interpretation
-
-Domain-specific pretraining produced the largest improvement. BiomedBERT uses a BERT-base-sized architecture but scored about 5.5 Macro F1 points above general BERT on validation. Classical TF-IDF models remained strong: tuned Logistic Regression and Linear SVM matched or exceeded the general-purpose transformer baselines.
-
-The main limitation is label ambiguity around general pathological conditions. The project used one deterministic split and did not run repeated seeds or cross-validation, so small differences should be interpreted cautiously. Biomedical pretraining may also have exposed models to some abstract text without labels.
-
-## Machine-readable records
-
-- `results/benchmark_validation.csv`
-- `results/final_test_metrics.csv`
-- `results/biomedbert_test_per_class.csv`
-- `results/hierarchical_validation.csv`
-- `results/calibration_summary.csv`
-- `results/efficiency.csv`
+The consolidated [`notebooks/04_baseline_benchmark.ipynb`](notebooks/04_baseline_benchmark.ipynb) contains the available classical, neural, transformer, hierarchy, calibration, efficiency, and locked-test workflow. Separate DistilBERT and final BiomedBERT notebooks were not retained, so placeholder notebooks are not added. The final Colab workflow is linked from the main README.

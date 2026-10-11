@@ -216,12 +216,12 @@ The complete preparation process can be reproduced in order with:
 
 The generated reports and supporting files are:
 
-- `reports/dataset_audit.txt` — source statistics and audit findings.
+- `reports/dataset_audit_report.txt` — source statistics and audit findings.
 - `reports/cleaning_report.txt` — cleaning rules and before/after counts.
 - `reports/split_report.txt` — split sizes, class distributions, and checks.
 - `reports/conflicting_abstracts.csv` — repeated texts carrying multiple labels.
 - `reports/removed_ambiguous_abstracts.csv` — records excluded during cleaning.
-- `reports/train_test_overlap.csv` — exact overlap found in the original split.
+- `reports/original_train_test_overlap.csv` — exact overlap found in the original split.
 
 The raw files remain unchanged. Their integrity is independently recorded with
 file sizes and SHA-256 checksums in the dataset audit output.
@@ -242,12 +242,12 @@ Medical-Abstracts-TC-Corpus-main/
 │       ├── validation.csv
 │       └── test.csv
 ├── reports/
-│   ├── dataset_audit.txt
+│   ├── dataset_audit_report.txt
 │   ├── cleaning_report.txt
 │   ├── split_report.txt
 │   ├── conflicting_abstracts.csv
 │   ├── removed_ambiguous_abstracts.csv
-│   └── train_test_overlap.csv
+│   └── original_train_test_overlap.csv
 ├── src/
 │   ├── 01_dataset_audit.py
 │   ├── 02_clean_dataset.py

@@ -317,7 +317,7 @@ team-ultron-medical-abstract-classification/
 | Azaa Almousli | Dataset analysis; preprocessing; class-distribution analysis; project documentation |
 | Muhammet Çelik | Repository and file-structure organization; README and documentation setup; final testing and result verification; confusion-matrix and report preparation; final submission packaging |
 
-Detailed statements are in [`contributions/`](contributions/). The professor's requested `<STUDENT_NAME>_<STUDENT_ID>_<GITHUB_USERNAME>.md` naming convention cannot be completed without the five student IDs and GitHub usernames; the repository retains the agreed name-based files rather than inventing identifiers.
+Detailed statements are in [`contributions/`](contributions/). 
 
 ## License
 

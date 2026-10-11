@@ -1,0 +1,2 @@
+model,hardware,split,examples,parameters,inference_seconds,milliseconds_per_abstract,abstracts_per_second
+BiomedBERT,Google Colab T4 GPU,validation,1245,109486085,34.95,28.07,35.62

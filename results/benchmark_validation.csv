@@ -1,0 +1,12 @@
+rank,model,group,val_accuracy,val_macro_f1,test_macro_f1,selection
+1,BiomedBERT,New method,0.8683,0.8672,0.8603,selected
+2,BioBERT,New method,0.8490,0.8456,,not selected
+3,DeBERTa-v3,New method,0.8313,0.8322,,not selected
+4,Logistic Regression,Baseline,0.8217,0.8203,0.7759,not selected
+5,Linear SVM,Baseline,0.8241,0.8180,,not selected
+6,BERT-base,Baseline,,0.8124,,not selected
+7,DistilBERT,Baseline,0.8048,0.8027,0.7818,not selected
+8,Naive Bayes tuned,Baseline,0.7920,0.7889,0.7542,not selected
+9,TextCNN,Baseline,,0.7882,,not selected
+10,BiLSTM,Baseline,0.7333,0.7127,,not selected
+11,Naive Bayes default,Baseline,0.6755,0.4849,0.4996,not selected

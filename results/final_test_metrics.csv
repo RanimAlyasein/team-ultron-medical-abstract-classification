@@ -1,0 +1,2 @@
+model,split,accuracy,macro_precision,macro_recall,macro_f1,weighted_f1
+BiomedBERT,test,0.8635,0.8563,0.8651,0.8603,0.8623

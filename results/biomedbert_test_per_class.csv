@@ -1,0 +1,6 @@
+label,condition_name,precision,recall,f1
+1,Neoplasms,,,0.9367
+2,Digestive system diseases,,,0.8774
+3,Nervous system diseases,,,0.7975
+4,Cardiovascular diseases,,,0.9151
+5,General pathological conditions,,,0.7746

@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this repository, cite the upstream dataset paper and this project."
+title: "Team Ultron Medical Abstract Disease Classification"
+type: software
+version: 1.0.0
+date-released: 2026-10-12
+license: MIT
+authors:
+  - family-names: Almousli
+    given-names: Azaa
+  - family-names: Almasaadi
+    given-names: Saleh
+  - family-names: Alibraheem
+    given-names: Tasnim
+  - family-names: Alyasein
+    given-names: Ranim
+  - family-names: Çelik
+    given-names: Muhammet
+references:
+  - type: conference-paper
+    title: "Evaluating Unsupervised Text Classification: Zero-Shot and Similarity-Based Approaches"
+    authors:
+      - family-names: Schopf
+        given-names: Tim
+      - family-names: Braun
+        given-names: Daniel
+      - family-names: Matthes
+        given-names: Florian
+    year: 2023
+    doi: 10.1145/3582768.3582795

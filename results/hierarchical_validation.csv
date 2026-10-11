@@ -1,0 +1,4 @@
+system,scope,macro_f1,decision
+BiomedBERT flat,Five-class validation,0.8672,selected
+BiomedBERT Stage 2,Four specific classes,0.9478,diagnostic subset
+BiomedBERT hierarchical combined,Five-class validation,0.8599,rejected

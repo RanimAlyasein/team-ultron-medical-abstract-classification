@@ -4,11 +4,11 @@
 
 - Model training
 - Model comparison
-- BiomedBERT fine-tuning
 - Benchmark construction
 - Experiment analysis
 - Error analysis
 - Final model evaluation
+- Final PPT
 
 ## Contribution Summary
 
